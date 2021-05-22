@@ -1,0 +1,45 @@
+version: "2"
+services:
+  mysql:
+    image: mysql:8.0.16
+    container_name: mysql-payment
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=A123456
+      - MYSQL_DATABASE=webadm
+      - MYSQL_USER=webadm
+      - MYSQL_PASSWORD=A123456
+    volumes:
+      - ../volumes/mysql:/var/lib/mysql
+      - ../volumes/mysqlconf:/etc/mysql/mysql.conf.d
+    networks:
+      default:
+        ipv4_address: 10.12.0.2
+  app:
+    image: webdevops/php-apache-dev:8.0-alpine
+    container_name: php-payment
+    restart: always
+    volumes:
+      - ./:/var/www/html
+      - /usr/bin/ssh:/usr/bin/ssh
+    working_dir: /var/www/html
+    environment:
+      - WEB_DOCUMENT_ROOT=/var/www/html/public
+      - PHP_IDE_CONFIG=serverName=Local
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    networks:
+      default:
+        ipv4_address: 10.12.0.3
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.12.0.0/24
+          gateway: 10.12.0.1
