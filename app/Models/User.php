@@ -11,6 +11,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    const TYPE_COMMON = 'COMMON';
+    const TYPE_SHOPKEEPER = 'SHOPKEEPER';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -20,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'identity',
+        'type',
     ];
 
     /**

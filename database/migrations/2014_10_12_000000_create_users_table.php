@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('identity')->unique();
+            $table->enum('type', ['COMMON', 'SHOPKEEPER'])->default('COMMON');
             $table->rememberToken();
             $table->timestamps();
         });
