@@ -23,14 +23,19 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $this->faker->addProvider(new \Faker\Provider\pt_BR\Person($this->faker));
+        $this->faker->addProvider(new \Faker\Provider\pt_BR\Company($this->faker));
+
+        $type = $this->faker->randomElement(['COMMON', 'SHOPKEEPER']);
+
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
             'remember_token' => Str::random(10),
-            'identity' => $this->faker->numerify('#############'),
-            'type' => $this->faker->randomElement(['COMMON', 'SHOPKEEPER'])
+            'identity' => $type == 'COMMON' ? $this->faker->unique()->cpf(false) : $this->faker->unique()->cnpj(false),
+            'type' => $type,
         ];
     }
 
