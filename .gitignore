@@ -25,9 +25,7 @@ Homestead.yaml
 /public/hot
 /public/storage
 /storage/*.key
-/storage/logs/*
 /storage/export/*
-storage/**
 /vendor
 npm-debug.log
 yarn-error.log
