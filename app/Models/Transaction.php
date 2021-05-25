@@ -14,19 +14,24 @@ class Transaction extends Model
     const STATUS_FAILED = 'FAILED';
     
     protected $fillable = [
-        'payer',
-        'payee',
+        'payer_id',
+        'payee_id',
         'value',
         'status',
     ];
 
     public function payer()
     {
-        return $this->belongsTo('App\Models\Account', 'payer');
+        return $this->belongsTo('App\Models\Account', 'payer_id');
     }
 
     public function payee()
     {
-        return $this->belongsTo('App\Models\Account', 'payee');
+        return $this->belongsTo('App\Models\Account', 'payee_id');
     }
+
+    // public function payee()
+    // {
+    //     return $this->belongsTo('App\Models\Account', 'payee_id ');
+    // }
 }

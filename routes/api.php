@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::group(
+    ['prefix' => 'transactions'], function () {
+        Route::get('/', 'App\Http\Controllers\TransactionController@index');
+        Route::get('/{id}', 'App\Http\Controllers\TransactionController@show');
+        Route::post('/', 'App\Http\Controllers\TransactionController@store');
+    }
+);

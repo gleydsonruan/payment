@@ -16,6 +16,16 @@ class Account extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo('App\Models\User', 'user_id');
+    }
+
+    public function increaseBalance($value)
+    {
+        return $this->increment('balance', $value);
+    }
+
+    public function decreaseBalance($value)
+    {
+        return $this->decrement('balance', $value);
     }
 }
