@@ -13,10 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('auth/login', 'App\Http\Controllers\JwtAuthController@login');
+
 Route::group(
-    ['prefix' => 'transactions'], function () {
-        Route::get('/', 'App\Http\Controllers\TransactionController@index');
-        Route::get('/{id}', 'App\Http\Controllers\TransactionController@show');
-        Route::post('/', 'App\Http\Controllers\TransactionController@store');
+    ['middleware' => 'auth'], function () {
+        Route::group(
+            ['prefix' => 'transactions'], function () {
+                Route::get('/', 'App\Http\Controllers\TransactionController@index');
+                Route::get('/{id}', 'App\Http\Controllers\TransactionController@show');
+                Route::post('/', 'App\Http\Controllers\TransactionController@store');
+            }
+        );
     }
 );
