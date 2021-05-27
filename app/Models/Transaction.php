@@ -11,7 +11,6 @@ class Transaction extends Model
 
     const STATUS_PENDING = 'PENDING';
     const STATUS_CONFIRMED = 'CONFIRMED';
-    const STATUS_FAILED = 'FAILED';
     
     protected $fillable = [
         'payer_id',
@@ -30,8 +29,9 @@ class Transaction extends Model
         return $this->belongsTo('App\Models\Account', 'payee_id');
     }
 
-    // public function payee()
-    // {
-    //     return $this->belongsTo('App\Models\Account', 'payee_id ');
-    // }
+    public function confirmPayment()
+    {
+        $this->status = self::STATUS_CONFIRMED;
+        return $this->save();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Transaction;
 
+use App\Jobs\SendEmailJob;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Repositories\TransactionRepository;
@@ -37,13 +38,16 @@ class TransactionService
             DB::beginTransaction();
             
             $transaction = $this->_repository->create($attributes);
-            $this->transfer($transaction);            
+            $this->transfer($transaction);
+            $transaction->confirmPayment();
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;
         }
 
         DB::commit();
+
+        $this->sendConfirmationEmail($transaction);
 
         return $transaction;
     }
@@ -73,10 +77,34 @@ class TransactionService
 
     protected function authorize(Transaction $transaction)
     {
-        $auth = Http::get('https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6')['message'];
+        $auth = Http::get($this->getPaymentAuthUrl())['message'];
         
         if ($auth != 'Autorizado') {
             throw new \Exception("Transação não autorizada");
         }
+    }
+
+    protected function sendConfirmationEmail(Transaction $transaction)
+    {
+        try {
+            $payer = $this->transaction->payer->user->name;
+            $value = $this->transaction->value;
+            $subject = 'Pagamento recebido';
+            $body = "Voce recebeu um pagamento de ${payer} no valor de ${value}.";
+    
+            SendEmailJob::dispatch($transaction->payee->email, $subject, $body);
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function getPaymentAuthUrl() : string
+    {
+        return env(
+            'PAYMENT_AUTH_URL',
+            'https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6'
+        );
     }
 }

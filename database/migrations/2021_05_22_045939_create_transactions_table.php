@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
             $table->foreignId('payee_id')->constrained('accounts');
             $table->foreignId('payer_id')->constrained('accounts');
             $table->double('value');
-            $table->enum('status', ['PENDING', 'CONFIRMED', 'FAILED'])->default('PENDING');
+            $table->enum('status', ['PENDING', 'CONFIRMED'])->default('PENDING');
             $table->timestamps();
         });
     }
