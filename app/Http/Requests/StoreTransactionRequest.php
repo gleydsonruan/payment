@@ -26,7 +26,7 @@ class StoreTransactionRequest extends FormRequest
         return [
             'payer_id' => 'required|exists:accounts,id',
             'payee_id' => 'required|exists:accounts,id',
-            'value' => "required",
+            'value' => "required|numeric|gt:0",
         ];
     }
 }

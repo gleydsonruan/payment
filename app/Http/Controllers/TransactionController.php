@@ -39,7 +39,7 @@ class TransactionController extends Controller
     public function store(StoreTransactionRequest $request)
     {
         try {
-            $transaction = $this->model->create($request->all());
+            $transaction = $this->model->create($request->validated());
         } catch (\Throwable $th) {
             return response()->json(
                 [

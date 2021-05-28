@@ -29,3 +29,5 @@ Homestead.yaml
 /vendor
 npm-debug.log
 yarn-error.log
+coverage/
+.phpunit.result.cache
