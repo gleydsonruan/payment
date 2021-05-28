@@ -34,4 +34,10 @@ class Transaction extends Model
         $this->status = self::STATUS_CONFIRMED;
         return $this->save();
     }
+
+    public function transfer()
+    {
+        $this->payer->decreaseBalance($this->value);
+        $this->payee->increaseBalance($this->value);
+    }
 }

@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Account;
 use App\Models\Transaction;
+use Mockery;
 use Tests\TestCase;
 
 class TransactionTest extends TestCase
@@ -37,5 +38,20 @@ class TransactionTest extends TestCase
         $this->assertEquals(Transaction::STATUS_PENDING, $transaction->status);
         $transaction->confirmPayment();
         $this->assertEquals(Transaction::STATUS_CONFIRMED, $transaction->status);
+    }
+
+    public function testTransferShouldDecreaseAndIncreaseAccountsBalance()
+    {
+        $accountMock = Mockery::mock(
+            Account::class, function ($mock) {
+                $mock->shouldReceive('decreaseBalance')->once();
+                $mock->shouldReceive('increaseBalance')->once();
+            }
+        );
+        $transaction = new Transaction();
+        $transaction->payer = $accountMock;
+        $transaction->payee = $accountMock;
+
+        $transaction->transfer();
     }
 }

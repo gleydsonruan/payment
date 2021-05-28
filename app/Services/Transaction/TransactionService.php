@@ -13,23 +13,23 @@ use Illuminate\Support\Facades\Http;
 class TransactionService
 {
     /**
-     * @var \App\Repositories\TransactionRepository $_repository
+     * @var \App\Repositories\TransactionRepository $repository
      */
-    private $_repository;
+    private $repository;
 
     public function __construct(TransactionRepository $repository)
     {
-        $this->_repository = $repository;
+        $this->repository = $repository;
     }
 
     public function find($id, $fail = true) : ?Transaction
     {
-        return $this->_repository->find($id, $fail);
+        return $this->repository->find($id, $fail);
     }
 
     public function all() : ?Collection
     {
-        return $this->_repository->all();
+        return $this->repository->all();
     }
     
     public function create(array $attributes) : ?Transaction
@@ -37,7 +37,7 @@ class TransactionService
         try {
             DB::beginTransaction();
             
-            $transaction = $this->_repository->create($attributes);
+            $transaction = $this->repository->create($attributes);
             $this->transfer($transaction);
             $transaction->confirmPayment();
         } catch (\Throwable $th) {
@@ -52,15 +52,14 @@ class TransactionService
         return $transaction;
     }
 
-    protected function transfer(Transaction $transaction)
+    public function transfer(Transaction $transaction)
     {
         $this->validateTransaction($transaction);
-        $transaction->payer->decreaseBalance($transaction->value);
-        $transaction->payee->increaseBalance($transaction->value);
+        $transaction->transfer();
         $this->authorize($transaction);
     }
 
-    protected function validateTransaction(Transaction $transaction)
+    public function validateTransaction(Transaction $transaction)
     {
         if ($transaction->payer->user->type == User::TYPE_SHOPKEEPER) {
             throw new \Exception("Usuário lojista não pode fazer transferência");
@@ -75,7 +74,7 @@ class TransactionService
         }
     }
 
-    protected function authorize(Transaction $transaction)
+    public function authorize(Transaction $transaction)
     {
         $auth = Http::get($this->getPaymentAuthUrl())['message'];
         
@@ -84,7 +83,7 @@ class TransactionService
         }
     }
 
-    protected function sendConfirmationEmail(Transaction $transaction)
+    public function sendConfirmationEmail(Transaction $transaction)
     {
         try {
             $payer = $this->transaction->payer->user->name;
@@ -100,7 +99,7 @@ class TransactionService
         return true;
     }
 
-    protected function getPaymentAuthUrl() : string
+    public function getPaymentAuthUrl() : string
     {
         return env(
             'PAYMENT_AUTH_URL',
